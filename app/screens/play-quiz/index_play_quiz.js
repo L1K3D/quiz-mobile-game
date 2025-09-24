@@ -1,7 +1,7 @@
 import { StatusBar } from 'expo-status-bar';
 import { useState } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, TextInput } from 'react-native';
-import styles from './styles-create-quiz/styles_play_quiz';
+import styles from './styles-play-quiz/styles_play_quiz';
 
 export default function PlayQuiz({ navigation, route }) {
 
