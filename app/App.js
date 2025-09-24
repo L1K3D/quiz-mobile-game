@@ -1,7 +1,8 @@
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
-import Home from "./screens/home";
+import Home from "./screens/home/index_home";
+import CreateQuiz from "./screens/create-quiz/index_create_quiz"
 
 const Stack = createNativeStackNavigator();
 
@@ -10,6 +11,7 @@ export default function App() {
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Home">
         <Stack.Screen name="Home" component={Home} options={{headerBackVisible: false, }} />
+        <Stack.Screen name="CreateQuiz" component={CreateQuiz} options={{ headerBackVisible: false, }} />
       </Stack.Navigator>
     </NavigationContainer>
   );
