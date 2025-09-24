@@ -9,19 +9,16 @@ export default function Home({ navigation, route }) {
 
         <View style={styles.container}>
             <Text style={styles.principalTitle}>Welcome to the ultimate quiz game!</Text>
-            <Text></Text><Text></Text>
-
+        
             <Text style={styles.label}>Select an option to continue:</Text>
             <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('CreateQuiz')}>
-                <Text style={styles.buttonText}>Create a new Quiz</Text>
+                <Text style={styles.buttonText}>Verify theames</Text>
             </TouchableOpacity>
-            <Text></Text>
-
+            
             <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Tela2')}>
                 <Text style={styles.buttonText}>Tela 2</Text>
             </TouchableOpacity>
-            <Text></Text>
-
+            
             <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Tela3')}>
                 <Text style={styles.buttonText}>Tela 3</Text>
             </TouchableOpacity>
