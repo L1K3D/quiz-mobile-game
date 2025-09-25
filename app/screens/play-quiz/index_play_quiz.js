@@ -128,7 +128,15 @@ export default function PlayQuiz({ navigation }) {
             <Text style={styles.principalTitle}>
                 Question {currentIndex + 1}/{questions.length}
             </Text>
+            <Text style={styles.label}>{currentQuestion.description}</Text>
+
+            {currentAnswers.map((ans) =>(
+                <TouchableOpacity key={ans.id} style={styles.button} onPress={() => handleAnswer(ans)}>
+                    <Text style={styles.buttonText}>{ans.answer}</Text>
+                </TouchableOpacity>
+            ))}
+
         </View>
-    )
+    );
 
 }
