@@ -33,7 +33,7 @@ export default function CreateQuiz({ navigation, route }) {
     const renderThemeItem = ({ item }) => (
         <TouchableOpacity
             style={styles.listItem}
-            onPress={() => alert('You select the Theme ID: ' + item.id', Nome: ' + item.name)}
+            onPress={() => alert('You select the Theme ID: ' + item.id + ', Nome: ' + item.name)}
         >
             <Text style={styles.listText}>{item.name}</Text>
         </TouchableOpacity>
