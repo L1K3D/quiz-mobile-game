@@ -39,19 +39,19 @@ export async function getAllResults() {
 }
 
 // Adiciona um registro
-export async function addResult(result) {
+export async function addResult(newResult) {
     const cx = await getDbConnection();
     const query = `
     INSERT INTO tbResults (id_theme, total_questions, correct_answers)
     VALUES (?, ?, ?)
   `;
-    const result = await cx.runAsync(query, [
-        result.id_theme,
-        result.total_questions,
-        result.correct_answers
+    const execResult = await cx.runAsync(query, [
+        newResult.id_theme,
+        newResult.total_questions,
+        newResult.correct_answers
     ]);
     await cx.closeAsync();
-    return result.changes === 1;
+    return execResult.changes === 1;
 }
 
 // Deleta um registro pelo código
