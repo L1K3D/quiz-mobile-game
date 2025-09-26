@@ -91,19 +91,6 @@ const styles = StyleSheet.create({
     marginTop: 18,
     alignItems: 'center',
   },
-  list: {
-    width: '90%',
-    marginTop: 20,
-  },
-  listItem: {
-    backgroundColor: '#f0f0f0',
-    padding: 20,
-    marginVertical: 8,
-    borderRadius: 10,
-  },
-  listText: {
-    fontSize: 18,
-  },
 });
 
 export default styles;

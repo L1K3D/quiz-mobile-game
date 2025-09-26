@@ -22,6 +22,10 @@ export default function Home({ navigation, route }) {
             <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('PlayQuiz')}>
                 <Text style={styles.buttonText}>Play Quiz</Text>
             </TouchableOpacity>
+
+            <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('CreateNewTheme')}>
+                <Text style={styles.buttonText}>Create New Theme</Text>
+            </TouchableOpacity>
             
             <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Tela3')}>
                 <Text style={styles.buttonText}>Tela 3</Text>
