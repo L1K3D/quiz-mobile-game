@@ -4,10 +4,9 @@ import { StyleSheet, Text, View, TouchableOpacity, TextInput, FlatList, Activity
 import styles from './styles-create-quiz/styles_create_quiz';
 import { useEffect } from 'react';
 
-import * as tbThemes from '../../services/themes_table_database_services';
+import * as tbQuestions from '../../services/questions_table_database_services';
 
-
-export default function CreateQuiz({ navigation, route }) {
+export default function CreateQuestions({ navigation, route }) {
 
     // Database interaction
 
@@ -78,7 +77,7 @@ export default function CreateQuiz({ navigation, route }) {
             {/*Dentro do criar tema, criar as perguntas*/}
 
             {/*Voltar*/}
-            <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Home')}>
+            <TouchableOpacity style={styles.button} onPress={() => navigation.goBack()}>
                 <Text style={styles.buttonText}>Voltar</Text>
             </TouchableOpacity>
 

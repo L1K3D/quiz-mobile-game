@@ -9,7 +9,7 @@ export async function getDbConnection() {
 // Cria tabela se não existir
 export async function createResultsTable() {
     const query = `
-    CREATE TABLE tbResults (
+    CREATE TABLE IF NOT EXISTS tbResults (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         id_theme INTEGER NOT NULL,
         total_questions INTEGER NOT NULL,
