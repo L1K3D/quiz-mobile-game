@@ -1,7 +1,8 @@
 import { StatusBar } from 'expo-status-bar';
 import { use, useState } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, TextInput, FlatList, ActivityIndicator } from 'react-native';
-import styles from './styles-create-quiz/styles_create_quiz';
+import styles from './styles-create-questions/styles-create-questions';
+import * as tbThemes from '../../services/themes_table_database_services';
 import { useEffect } from 'react';
 
 import * as tbQuestions from '../../services/questions_table_database_services';
@@ -9,11 +10,11 @@ import * as tbQuestions from '../../services/questions_table_database_services';
 export default function CreateQuestions({ navigation, route }) {
 
     // Database interaction
-
     const { getAllThemes: getThemes } = tbThemes;
 
     // Storaged themes comes from DB
     const [themes, setThemes] = useState([]);
+
     // Loading state
     const [isLoading, setIsLoading] = useState(true);
 
@@ -33,12 +34,7 @@ export default function CreateQuestions({ navigation, route }) {
     }, [route.params?.themeAdded]); // Reload when a new theme is added
 
     const renderThemeItem = ({ item }) => (
-        <TouchableOpacity
-            style={styles.listItem}
-            onPress={() => alert('You select the Theme ID: ' + item.id + ', Nome: ' + item.name)}
-        >
             <Text style={styles.listText}>{item.name}</Text>
-        </TouchableOpacity>
     );
 
     if (isLoading) {
@@ -50,37 +46,42 @@ export default function CreateQuestions({ navigation, route }) {
     }
 
     return (
-
         <View style={styles.container}>
             <StatusBar style="auto" />
-            <Text style={styles.principalTitle}>Screen to Theme List!</Text>
 
-            {/*Lista dos temas*/}
             <FlatList
                 data={themes}
                 renderItem={renderThemeItem}
                 keyExtractor={item => item.id.toString()}
-                style={styles.list}
-                ListEmptyComponent={<Text>No themes found. Create a new one!</Text>}
+                style={styles.teste}
             />
 
+            <Text style={styles.subtitulo}>Create questions</Text>
 
-            {/*Dentro dos temas tem as perguntas*/}
+            <TextInput style={styles.input} placeholder="Question 1" />
 
+            <TextInput style={styles.input} placeholder="Answer" />
 
-            {/*Crear novo tema*/}
+            <TextInput style={styles.input} placeholder="Correct answer" />
 
-            <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('CreateNewTheme')}>
-                <Text style={styles.buttonText}>Create a new Theme</Text>
-            </TouchableOpacity>
+            <TextInput style={styles.input} placeholder="Wrong answer 1" />
 
-            {/*Dentro do criar tema, criar as perguntas*/}
+            <TextInput style={styles.input} placeholder="Wrong answer 2" />
+
+            <TextInput style={styles.input} placeholder="Wrong answer 3" />
+
+            <TextInput style={styles.input} placeholder="Question 2" />
+
+            <TextInput style={styles.input} placeholder="Answer" />
+
+            
+
+            
 
             {/*Voltar*/}
             <TouchableOpacity style={styles.button} onPress={() => navigation.goBack()}>
-                <Text style={styles.buttonText}>Voltar</Text>
+                <Text style={styles.buttonText}>Back</Text>
             </TouchableOpacity>
-
         </View>
     );
 }

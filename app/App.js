@@ -5,8 +5,9 @@ import { useEffect } from 'react';
 import Home from "./screens/home/index_home";
 import CreateQuiz from "./screens/create-quiz/index_create_quiz"
 import CreateNewTheme from "./screens/create-new-theme/index-create-new-theme";
-// import CreateQuestions from "./screens/create-questions/index-create-questions";
+
 import PlayQuiz from "./screens/play-quiz/index_play_quiz";
+import CreateQuestions from "./screens/create-questions/create-questions";
 
 import * as tbThemes from './services/themes_table_database_services';
 import * as tbAnswers from './services/answers_table_database_services';
@@ -39,8 +40,9 @@ export default function App() {
         <Stack.Screen name="Home" component={Home} options={{headerBackVisible: false, }} />
         <Stack.Screen name="CreateQuiz" component={CreateQuiz} options={{ headerBackVisible: false, }} />
         <Stack.Screen name="CreateNewTheme" component={CreateNewTheme} options={{ headerBackVisible: false, }} />
+        <Stack.Screen name="CreateQuestions" component={CreateQuestions} options={{ headerBackVisible: false, }} />
         <Stack.Screen name="PlayQuiz" component={PlayQuiz} options={{headerBackVisible: false, }} />
-        {/* <Stack.Screen name="CreateQuestions" component={CreateQuestions} options={{ headerBackVisible: false, }} /> */}
+
       </Stack.Navigator>
     </NavigationContainer>
   );

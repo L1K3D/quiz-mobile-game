@@ -46,7 +46,7 @@ export async function addQuestion(question) {
         question.id_theme
     ]);
     await cx.closeAsync();
-    return result.changes === 1;
+    return result.lastInsertRowId;
 }
 
 // Atualiza um registro existente
