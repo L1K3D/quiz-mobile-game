@@ -91,6 +91,22 @@ const styles = StyleSheet.create({
     marginTop: 18,
     alignItems: 'center',
   },
+  listText: {
+    fontSize: 20,
+    fontWeight: "700",
+    color: "#9be7c4",
+    marginBottom: 18,
+    letterSpacing: 1.5,
+    textAlign: 'center',
+  },
+  subtitulo: {
+    fontSize: 20,
+    fontWeight: "700",
+    color: "#9be7c4",
+    marginBottom: 18,
+    letterSpacing: 1.5,
+    textAlign: 'center',
+  },
 });
 
 export default styles;
