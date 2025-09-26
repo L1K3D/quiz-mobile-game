@@ -9,7 +9,7 @@ export async function getDbConnection() {
 // Cria tabela se não existir
 export async function createResultsTable() {
     const query = `
-    CREATE TABLE tbResults (
+    CREATE TABLE IF NOT EXISTS tbResults (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         id_theme INTEGER NOT NULL,
         total_questions INTEGER NOT NULL,
@@ -39,16 +39,16 @@ export async function getAllResults() {
 }
 
 // Adiciona um registro
-export async function addResult(result) {
+export async function addResult(resultData) {
     const cx = await getDbConnection();
     const query = `
     INSERT INTO tbResults (id_theme, total_questions, correct_answers)
     VALUES (?, ?, ?)
   `;
     const result = await cx.runAsync(query, [
-        result.id_theme,
-        result.total_questions,
-        result.correct_answers
+        resultData.id_theme,
+        resultData.total_questions,
+        resultData.correct_answers
     ]);
     await cx.closeAsync();
     return result.changes === 1;
