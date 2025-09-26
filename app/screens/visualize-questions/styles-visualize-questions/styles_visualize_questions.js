@@ -77,7 +77,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: "#2dce89",
-    marginBottom: 10,
   },
   buttonSecondary: {
     backgroundColor: "#5e60ce",
@@ -86,7 +85,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "700",
     color: "#fff",
-    textAlign: 'center'
   },
   clearButtonWrapper: {
     marginTop: 18,

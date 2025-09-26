@@ -12,23 +12,15 @@ export default function Home({ navigation, route }) {
         
             <Text style={styles.label}>Select an option to continue:</Text>
             <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('CreateQuiz')}>
-                <Text style={styles.buttonText}>Verify theames</Text>
-            </TouchableOpacity>
-            
-            <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Tela2')}>
-                <Text style={styles.buttonText}>Tela 2</Text>
+                <Text style={styles.buttonText}>Verify Themes and Questions</Text>
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('PlayQuiz')}>
                 <Text style={styles.buttonText}>Play Quiz</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('CreateNewTheme')}>
-                <Text style={styles.buttonText}>Create New Theme</Text>
-            </TouchableOpacity>
-            
-            <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Tela3')}>
-                <Text style={styles.buttonText}>Tela 3</Text>
+            <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Quit')}>
+                <Text style={styles.buttonText}>Quit to phone screen</Text>
             </TouchableOpacity>
 
             <StatusBar style="auto" />

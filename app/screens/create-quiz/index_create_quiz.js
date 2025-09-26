@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import { use, useState } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, TextInput, FlatList, ActivityIndicator } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, TextInput, FlatList, ActivityIndicator, ScrollView, Alert } from 'react-native';
 import styles from './styles-create-quiz/styles_create_quiz';
 import { useEffect } from 'react';
 
@@ -17,6 +17,10 @@ export default function CreateQuiz({ navigation, route }) {
     const [themes, setThemes] = useState([]);
     // Loading state
     const [isLoading, setIsLoading] = useState(true);
+
+    const [idTheme, setIdTheme] = useState("");
+
+    const [nameTheme, setNameTheme] = useState("");
 
     // UseEffect to search data when a component needs
     useEffect(() => {
@@ -50,32 +54,82 @@ export default function CreateQuiz({ navigation, route }) {
         );
     }
 
+    function editTheme(identifier) {
+        const theme = themes.find(theme => theme.id == identifier);
+
+        if (theme != undefined) {
+            setIdTheme(theme.id);
+            setNameTheme(theme.name);
+        }
+
+        console.log(theme);
+    }
+
+    function removeTheme(identifier) {
+        Alert.alert('CAUTION', 'Are you sure, you want to exclude this theme?',
+            [
+                {
+                    text: 'Yes',
+                    onPress: () => effectiveThemeExclusion(identifier),
+                },
+                {
+                    text: 'No',
+                    style: 'cancel',
+                }
+            ]
+        );
+    }
+
+    async function effectiveThemeExclusion(identifier) {
+        try {
+            identifier = identifier.toString();
+            await tbThemes.deleteTheme(identifier);
+            Keyboard.dismiss();
+            clearFields();
+            await loadData();
+            Alert.alert('Theme deleted sucessfully!');
+        } catch (e) {
+            Alert.alert(e);
+        }
+    }
+
     return (
 
         <View style={styles.container}>
             <StatusBar style="auto" />
-            <Text style={styles.principalTitle}>Screen to Theme List!</Text>
+            <Text style={styles.principalTitle}>Theme List!</Text>
 
-            {/*Lista dos temas*/}
-            <FlatList
-                data={themes}
-                renderItem={renderThemeItem}
-                keyExtractor={item => item.id.toString()}
-                style={styles.list}
-                ListEmptyComponent={<Text>No themes found. Create a new one!</Text>}
-            />
+            {/* Lista os temas */}
+            <ScrollView style={{ width: '92%', marginTop: 12 }}>
+                {themes.map((theme, index) => (
+                    <View key={theme.name ?? index.toString()} style={{ marginBottom: 10 }}>
+                        <View style={[styles.card, { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }]}>
+                            <View>
+                                <Text style={{ color: '#b5c0d0', fontWeight: '700' }}>{theme.name}</Text>
+                            </View>
 
+                            <View style={{ flexDirection: 'row' }}>
+                                <TouchableOpacity style={[styles.button, { width: 90, height: 36, justifyContent: 'center', marginRight: 8 }]} onPress={() => editTheme(theme.name)}>
+                                    <Text style={styles.buttonText}>Edit</Text>
+                                </TouchableOpacity>
 
-            {/*Dentro dos temas tem as perguntas*/}
+                                <TouchableOpacity style={[styles.buttonSecondary, { width: 90, height: 36, justifyContent: 'center' }]} onPress={() => removeTheme(theme.id)}>
+                                    <Text style={styles.buttonText}>Delete</Text>
+                                </TouchableOpacity>
 
+                                <TouchableOpacity style={[styles.button, { width: 90, height: 36, justifyContent: 'center' }]} onPress={() => navigation.navigate('VisualizeQuestions')}>
+                                    <Text style={styles.buttonText}>Questions</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                    </View>
+                ))}
+            </ScrollView>
 
             {/*Crear novo tema*/}
-
             <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('CreateNewTheme')}>
                 <Text style={styles.buttonText}>Create a new Theme</Text>
             </TouchableOpacity>
-
-            {/*Dentro do criar tema, criar as perguntas*/}
 
             {/*Voltar*/}
             <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Home')}>
