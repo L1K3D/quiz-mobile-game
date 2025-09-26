@@ -1,7 +1,8 @@
-import { View, Text, FlatList } from "react-native";
-import styles from "./styles-quiz-summary/styles_quiz_summary"
+// screens/play-quiz/quiz_summary.js
+import { View, Text, FlatList, TouchableOpacity } from "react-native";
+import styles from "./styles-play-quiz/styles_play_quiz";
 
-export default function QuizSummary({ route }) {
+export default function QuizSummary({ route, navigation }) {
     const { finalAnswers, percent } = route.params;
 
     return (
@@ -16,13 +17,33 @@ export default function QuizSummary({ route }) {
                     <View style={styles.card}>
                         <Text style={styles.label}>{item.question.description}</Text>
                         <Text style={{ color: item.correct ? "green" : "red" }}>
-                            {item.correct ? "✅ Correto" : `❌ Errado (Correta: ${item.question.correctAnswer || "verifique no banco"
+                            {item.correct
+                                ? "✅ Correto"
+                                : `❌ Errado (Correta: ${
+                                // Busca a alternativa correta
+                                item.question.correctAnswer ||
+                                "verifique no banco de respostas"
                                 })`}
                         </Text>
                     </View>
                 )}
             />
+
+            {/* Botão Jogar Novamente */}
+            <TouchableOpacity
+                style={styles.button}
+                onPress={() => navigation.replace("PlayQuiz")}
+            >
+                <Text style={styles.buttonText}>Jogar Novamente</Text>
+            </TouchableOpacity>
+
+            {/* Botão Voltar ao Menu */}
+            <TouchableOpacity
+                style={[styles.button, { backgroundColor: "gray" }]}
+                onPress={() => navigation.goBack()}
+            >
+                <Text style={styles.buttonText}>Voltar ao Menu</Text>
+            </TouchableOpacity>
         </View>
     );
-
 }
