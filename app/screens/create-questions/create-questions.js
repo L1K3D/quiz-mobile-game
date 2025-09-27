@@ -56,26 +56,6 @@ export default function CreateQuestions({ navigation, route }) {
                 style={styles.teste}
             />
 
-            <Text style={styles.subtitulo}>Create questions</Text>
-
-            <TextInput style={styles.input} placeholder="Question 1" />
-
-            <TextInput style={styles.input} placeholder="Answer" />
-
-            <TextInput style={styles.input} placeholder="Correct answer" />
-
-            <TextInput style={styles.input} placeholder="Wrong answer 1" />
-
-            <TextInput style={styles.input} placeholder="Wrong answer 2" />
-
-            <TextInput style={styles.input} placeholder="Wrong answer 3" />
-
-            <TextInput style={styles.input} placeholder="Question 2" />
-
-            <TextInput style={styles.input} placeholder="Answer" />
-
-            
-
             
 
             {/*Voltar*/}
