@@ -53,12 +53,10 @@ export async function changeTheme(theme) {
     SET name = ?
     WHERE id = ?
   `;
-    const result = await cx.runAsync(query, [
-        theme.id,
-        theme.name
-    ]);
+    // ordem correta: [name, id]
+    const execResult = await cx.runAsync(query, [theme.name, theme.id]);
     await cx.closeAsync();
-    return result.changes === 1;
+    return execResult.changes === 1;
 }
 
 // Deleta um registro pelo código

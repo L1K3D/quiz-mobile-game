@@ -34,25 +34,30 @@ export default function VisualizeQuestions({ navigation }) {
         }, []
     );
 
-    async function loadQuestionsData() {
+    async function loadQuestionsAndAnswersByTheme(id_theme) {
         try {
-            console.log('Loading Questions Data...');
-            let questions = await tbQuestions.getAllQuestions();
-            setRegisters(questions);
+            const questionsByTheme = await tbQuestions.getQuestionsByTheme(id_theme);
+            setQuestions(questionsByTheme);
+
+            const answersByTheme = await tbAnswers.getAnswersByQuestion(id_theme);
+            setAnswers(answersByTheme);
         } catch (e) {
             Alert.alert(e.toString());
         }
     }
-
-    async function loadAnswersData() {
+    async function loadData() {
         try {
-            console.log('Loading Answers Data...');
-            let answers = await tbAnswers.getAllAnswers();
-            setRegisters(answers);
+            const allQuestions = await tbQuestions.getQuestionsByTheme(idThemeQuestion);
+            setQuestions(allQuestions);
         } catch (e) {
             Alert.alert(e.toString());
         }
-    }    
+    }
+    function clearFields() {
+        setIdQuestion("");
+        setDescriptionQuestion("");
+        setIdThemeQuestion("");
+    }
 
     function editQuestion(identifier) {
         const question = questions.find(question => question.id == identifier);
@@ -60,7 +65,7 @@ export default function VisualizeQuestions({ navigation }) {
         if (question != undefined) {
             setIdQuestion(question.id);
             setDescriptionQuestion(question.description);
-            setIdThemeQuestion(question.id_theme)
+            setIdThemeQuestion(question.id_theme);
         }
 
         console.log(question);
@@ -72,28 +77,28 @@ export default function VisualizeQuestions({ navigation }) {
         if (answer != undefined) {
             setIdAnswer(answer.id);
             setStatusCorrectAnswer(answer.status_correct);
-            setIdQuestionAnswer(answer.id_question)
+            setIdQuestionAnswer(answer.id_question);
         }
 
-        console.log(question);
+        console.log(answer);
     }
 
-    async function effectiveExclusion() {
+
+    async function effectiveExclusionQuestionByTheme() {
         try {
-            await DbService.deleteAllRegisters();
-            await loadData();
+            await tbQuestions.deleteQuestionsByTheme(idThemeQuestion);
         } catch (e) {
-            Alert.alert(e)
+            Alert.alert(e);
         }
     }
 
-    function excludeEverything() {
-        if (Alert.alert('Please, this step requires atention!', 'Do you confirm the EXCLUSION OF ALL DATA?',
+    function excludeAllQuestionsByTheme() {
+        if (Alert.alert('Please, this step requires atention!', 'Do you confirm the EXCLUSION OF ALL QUESTIONS AND ANSWERSOF THIS THEME?',
             [
                 {
                     text: 'Yes, confirm!',
                     onPress: () => {
-                        effectiveExclusion();
+                        effectiveExclusionQuestionByTheme();
                     }
                 },
                 {
@@ -101,21 +106,6 @@ export default function VisualizeQuestions({ navigation }) {
                     style: 'cancel'
                 }
             ]));
-    }
-
-    function removeElement(identifier) {
-        Alert.alert('CAUTION', 'Are you sure, you want to exclude this register?',
-            [
-                {
-                    text: 'Yes',
-                    onPress: () => effectiveRegisterExclusion(identifier),
-                },
-                {
-                    text: 'No',
-                    style: 'cancel',
-                }
-            ]
-        );
     }
 
     async function effectiveRegisterExclusion(identifier) {
@@ -130,4 +120,24 @@ export default function VisualizeQuestions({ navigation }) {
         }
     }
 
+    return (
+        <View style={styles.container}>
+            <FlatList
+                data={questions}
+                keyExtractor={item => item.id.toString()}
+                renderItem={({ item }) => (
+                    <View>
+                        <Text>{item.description}</Text>
+                        <TouchableOpacity onPress={() => editQuestion(item.id)}>
+                            <Text>Edit</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={() => removeQuestion(item.id)}>
+                            <Text>Remove</Text>
+                        </TouchableOpacity>
+                    </View>
+                )}
+            />
+        </View>
+    );
+    
 }
