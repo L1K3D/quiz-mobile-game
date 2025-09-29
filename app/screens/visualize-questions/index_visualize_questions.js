@@ -8,23 +8,106 @@ import * as tbQuestions from '../../services/questions_table_database_services';
 export default function VisualizeQuestions({ navigation, route }) {
     const { themeId, refresh: refreshParam } = route.params;
     const [questions, setQuestions] = useState([]);
+    const [idQuestion, setIdQuestion] = useState("");
+    const [descriptionQuestion, setDescriptionQuestion] = useState("");
+    const [idThemeQuestion, setIdThemeQuestion] = useState("");
+
+    const [answers, setAnswers] = useState([]);
+    const [idAnswer, setIdAnswer] = useState("");
+    const [statusCorrectAnswer, setStatusCorrectAnswer] = useState("");
+    const [idQuestionAnswer, setIdQuestionAnswer] = useState("");
+
+    async function processingUseEffect() {
+        try {
+            await tbQuestions.createQuestionsTable();
+            await tbAnswers.createAnswersTable();
+            await loadData();
+        }
+        catch (e) {
+            console.log(e)
+        }
+    }
+
+    useEffect(
+        () => {
+            processingUseEffect();
+        }, []
+    );
+
+    async function loadQuestionsAndAnswersByTheme(id_theme) {
     const [refresh, setRefresh] = useState(false);
 
     async function loadQuestions() {
         try {
-            const questions = await tbQuestions.getQuestionsByTheme(themeId);
-            setQuestions(questions);
+            console.log('Loading Questions Data...');
+            let questions = await tbQuestions.getAllQuestions();
+            setRegisters(questions);
         } catch (e) {
             Alert.alert(e.toString());
         }
     }
 
-    useEffect(() => {
-        loadQuestions();
-    }, [refreshParam, refresh]);
+    async function loadAnswersData() {
+        try {
+            console.log('Loading Answers Data...');
+            let answers = await tbAnswers.getAllAnswers();
+            setRegisters(answers);
+        } catch (e) {
+            Alert.alert(e.toString());
+        }
+    }    
+
+    function editQuestion(identifier) {
+        const question = questions.find(question => question.id == identifier);
+
+        if (question != undefined) {
+            setIdQuestion(question.id);
+            setDescriptionQuestion(question.description);
+            setIdThemeQuestion(question.id_theme)
+        }
+
+        console.log(question);
+    }
+
+    function editAnswer(identifier) {
+        const answer = answers.find(answer => answer.id == identifier);
+
+        if (answer != undefined) {
+            setIdAnswer(answer.id);
+            setStatusCorrectAnswer(answer.status_correct);
+            setIdQuestionAnswer(answer.id_question)
+        }
+
+        console.log(question);
+    }
+
+    async function effectiveExclusion() {
+        try {
+            await DbService.deleteAllRegisters();
+            await loadData();
+        } catch (e) {
+            Alert.alert(e)
+        }
+    }
+
+    function excludeEverything() {
+        if (Alert.alert('Please, this step requires atention!', 'Do you confirm the EXCLUSION OF ALL DATA?',
+            [
+                {
+                    text: 'Yes, confirm!',
+                    onPress: () => {
+                        effectiveExclusion();
+                    }
+                },
+                {
+                    text: 'No!',
+                    style: 'cancel'
+                }
+            ]));
+    }
 
     function removeElement(identifier) {
-        Alert.alert('CAUTION', 'Are you sure you want to delete this record?',
+        Alert.alert('CAUTION', 'Are you sure, you want to exclude this register?',
             [
                 {
                     text: 'Yes',
@@ -48,40 +131,4 @@ export default function VisualizeQuestions({ navigation, route }) {
         }
     }
 
-    return (
-        <View style={styles.container}>
-            <StatusBar style="auto" />
-            <Text style={styles.principalTitle}>Visualize Questions!</Text>
-
-            {/* List of questions */}
-            <ScrollView style={{ width: '92%', marginTop: 12 }}>
-                {questions.map((question) => (
-                    <View key={question.id.toString()} style={{ marginBottom: 10 }}>
-                        <View style={[styles.card, { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }]}>
-                            <View>
-                                <Text style={{ color: '#b5c0d0', fontWeight: '700' }}>{question.description}</Text>
-                            </View>
-
-                            <View >
-                                <TouchableOpacity style={[styles.button, { width: 90, height: 36, justifyContent: 'center', marginRight: 8,  }]} onPress={() => navigation.navigate('EditQuestion', { questionId: question.id, onGoBack: () => setRefresh(!refresh) })}>
-                                    <Text style={styles.buttonText}>Edit</Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity style={[styles.button, { width: 90, height: 36, justifyContent: 'center', marginRight: 8 }]} onPress={() => removeElement(question.id)}>
-                                    <Text style={styles.buttonText}>Delete</Text>
-                                </TouchableOpacity>
-                            </View>
-                        </View>
-                    </View>
-                ))}
-            </ScrollView>
-
-            <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('CreateQuestions', { themeId: themeId })}>
-                <Text style={styles.buttonText}>Create Question</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('CreateQuiz')}>
-                <Text style={styles.buttonText}>Back</Text>
-            </TouchableOpacity>
-        </View>
-    );
 }
