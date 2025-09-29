@@ -54,8 +54,8 @@ export async function changeTheme(theme) {
     WHERE id = ?
   `;
     const result = await cx.runAsync(query, [
-        theme.id,
-        theme.name
+        theme.name,
+        theme.id
     ]);
     await cx.closeAsync();
     return result.changes === 1;

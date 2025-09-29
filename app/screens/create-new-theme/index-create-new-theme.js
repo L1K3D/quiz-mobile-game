@@ -33,7 +33,7 @@ export default function CreateNewTheme({ navigation, route }) {
             <StatusBar style="auto" />
             <Text style={styles.principalTitle}>Screen to create a new Theme!</Text>
 
-            {/*Formulário para criar novo tema*/}
+            {/*Form to create a new theme*/}
 
             <TextInput
                 style={styles.input}
@@ -43,15 +43,15 @@ export default function CreateNewTheme({ navigation, route }) {
                 onChangeText={setThemeName}
             />
 
-            {/*Ao clicar no botão, salvat no SQLite */}
+            {/*When clicking the button, save to SQLite*/}
             <TouchableOpacity style={styles.button} onPress={handleSave}>
                 <Text style={styles.buttonText}>Save</Text>
             </TouchableOpacity>
 
-            {/*Voltar*/}
+            {/*Back*/}
 
             <TouchableOpacity style={styles.button} onPress={() => navigation.goBack()}>
-                <Text style={styles.buttonText}>Voltar</Text>
+                <Text style={styles.buttonText}>Back</Text>
             </TouchableOpacity>
 
         </View>

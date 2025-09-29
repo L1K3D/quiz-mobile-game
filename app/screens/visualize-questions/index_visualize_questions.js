@@ -1,110 +1,30 @@
+import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from "react";
-import { View, Text, TouchableOpacity, TextInput, FlatList, Alert, ScrollView } from "react-native";
+import { View, Text, TouchableOpacity, Alert, ScrollView } from "react-native";
 import styles from "./styles-visualize-questions/styles_visualize_questions";
 
 import * as tbQuestions from '../../services/questions_table_database_services';
-import * as tbAnswers from '../../services/answers_table_database_services';
 
-export default function VisualizeQuestions({ navigation }) {
-
+export default function VisualizeQuestions({ navigation, route }) {
+    const { themeId, refresh: refreshParam } = route.params;
     const [questions, setQuestions] = useState([]);
-    const [idQuestion, setIdQuestion] = useState("");
-    const [descriptionQuestion, setDescriptionQuestion] = useState("");
-    const [idThemeQuestion, setIdThemeQuestion] = useState("");
+    const [refresh, setRefresh] = useState(false);
 
-    const [answers, setAnswers] = useState([]);
-    const [idAnswer, setIdAnswer] = useState("");
-    const [statusCorrectAnswer, setStatusCorrectAnswer] = useState("");
-    const [idQuestionAnswer, setIdQuestionAnswer] = useState("");
-
-    async function processingUseEffect() {
+    async function loadQuestions() {
         try {
-            await tbQuestions.createQuestionsTable();
-            await tbAnswers.createAnswersTable();
-            await loadData();
-        }
-        catch (e) {
-            console.log(e)
-        }
-    }
-
-    useEffect(
-        () => {
-            processingUseEffect();
-        }, []
-    );
-
-    async function loadQuestionsData() {
-        try {
-            console.log('Loading Questions Data...');
-            let questions = await tbQuestions.getAllQuestions();
-            setRegisters(questions);
+            const questions = await tbQuestions.getQuestionsByTheme(themeId);
+            setQuestions(questions);
         } catch (e) {
             Alert.alert(e.toString());
         }
     }
 
-    async function loadAnswersData() {
-        try {
-            console.log('Loading Answers Data...');
-            let answers = await tbAnswers.getAllAnswers();
-            setRegisters(answers);
-        } catch (e) {
-            Alert.alert(e.toString());
-        }
-    }    
-
-    function editQuestion(identifier) {
-        const question = questions.find(question => question.id == identifier);
-
-        if (question != undefined) {
-            setIdQuestion(question.id);
-            setDescriptionQuestion(question.description);
-            setIdThemeQuestion(question.id_theme)
-        }
-
-        console.log(question);
-    }
-
-    function editAnswer(identifier) {
-        const answer = answers.find(answer => answer.id == identifier);
-
-        if (answer != undefined) {
-            setIdAnswer(answer.id);
-            setStatusCorrectAnswer(answer.status_correct);
-            setIdQuestionAnswer(answer.id_question)
-        }
-
-        console.log(question);
-    }
-
-    async function effectiveExclusion() {
-        try {
-            await DbService.deleteAllRegisters();
-            await loadData();
-        } catch (e) {
-            Alert.alert(e)
-        }
-    }
-
-    function excludeEverything() {
-        if (Alert.alert('Please, this step requires atention!', 'Do you confirm the EXCLUSION OF ALL DATA?',
-            [
-                {
-                    text: 'Yes, confirm!',
-                    onPress: () => {
-                        effectiveExclusion();
-                    }
-                },
-                {
-                    text: 'No!',
-                    style: 'cancel'
-                }
-            ]));
-    }
+    useEffect(() => {
+        loadQuestions();
+    }, [refreshParam, refresh]);
 
     function removeElement(identifier) {
-        Alert.alert('CAUTION', 'Are you sure, you want to exclude this register?',
+        Alert.alert('CAUTION', 'Are you sure you want to delete this record?',
             [
                 {
                     text: 'Yes',
@@ -120,14 +40,48 @@ export default function VisualizeQuestions({ navigation }) {
 
     async function effectiveRegisterExclusion(identifier) {
         try {
-            await DbService.deleteRegister(identifier);
-            Keyboard.dismiss();
-            clearFields();
-            await loadData();
-            Alert.alert('Register deleted sucessfully!');
+            await tbQuestions.deleteQuestion(identifier);
+            setRefresh(!refresh);
+            Alert.alert('Record deleted successfully!');
         } catch (e) {
-            Alert.alert(e);
+            Alert.alert(e.toString());
         }
     }
 
+    return (
+        <View style={styles.container}>
+            <StatusBar style="auto" />
+            <Text style={styles.principalTitle}>Visualize Questions!</Text>
+
+            {/* List of questions */}
+            <ScrollView style={{ width: '92%', marginTop: 12 }}>
+                {questions.map((question) => (
+                    <View key={question.id.toString()} style={{ marginBottom: 10 }}>
+                        <View style={[styles.card, { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }]}>
+                            <View>
+                                <Text style={{ color: '#b5c0d0', fontWeight: '700' }}>{question.description}</Text>
+                            </View>
+
+                            <View >
+                                <TouchableOpacity style={[styles.button, { width: 90, height: 36, justifyContent: 'center', marginRight: 8,  }]} onPress={() => navigation.navigate('EditQuestion', { questionId: question.id, onGoBack: () => setRefresh(!refresh) })}>
+                                    <Text style={styles.buttonText}>Edit</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity style={[styles.button, { width: 90, height: 36, justifyContent: 'center', marginRight: 8 }]} onPress={() => removeElement(question.id)}>
+                                    <Text style={styles.buttonText}>Delete</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                    </View>
+                ))}
+            </ScrollView>
+
+            <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('CreateQuestions', { themeId: themeId })}>
+                <Text style={styles.buttonText}>Create Question</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('CreateQuiz')}>
+                <Text style={styles.buttonText}>Back</Text>
+            </TouchableOpacity>
+        </View>
+    );
 }
