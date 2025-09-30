@@ -7,7 +7,8 @@ import {
     ActivityIndicator,
     ScrollView,
     Alert,
-    Keyboard
+    Keyboard,
+    StyleSheet
 } from 'react-native';
 import styles from './styles-create-quiz/styles_create_quiz';
 

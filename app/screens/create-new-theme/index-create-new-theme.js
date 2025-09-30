@@ -34,9 +34,10 @@ export default function CreateNewTheme({ navigation, route }) {
 
     return (
         <View style={styles.container}>
-            <Text style={styles.principalTitle}>
-                {isEditing ? 'Editar Tema' : 'Criar Novo Tema'}
-            </Text>
+            <StatusBar style="auto" />
+            <Text style={styles.principalTitle}>Screen to create a new Theme!</Text>
+
+            {/*Form to create a new theme*/}
 
             <TextInput
                 style={styles.input}
@@ -45,15 +46,24 @@ export default function CreateNewTheme({ navigation, route }) {
                 placeholder="Nome do tema"
             />
 
-            <TouchableOpacity style={styles.button} onPress={saveTheme}>
-                <Text style={styles.buttonText}>
-                    {isEditing ? 'Salvar Alterações' : 'Criar Tema'}
-                </Text>
+            {/*When clicking the button, save to SQLite*/}
+            <TouchableOpacity style={styles.button} onPress={handleSave}>
+                <Text style={styles.buttonText}>Save</Text>
             </TouchableOpacity>
 
+            {/*Back*/}
+
             <TouchableOpacity style={styles.button} onPress={() => navigation.goBack()}>
-                <Text style={styles.buttonText}>Cancelar</Text>
+                <Text style={styles.buttonText}>Back</Text>
             </TouchableOpacity>
+,
+
+
+
+
+
+
+
         </View>
     );
 }

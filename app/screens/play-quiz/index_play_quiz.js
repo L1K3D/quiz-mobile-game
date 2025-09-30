@@ -9,11 +9,11 @@ import { getAllAnswers } from "../../services/answers_table_database_services";
 import { addResult } from "../../services/results_table_database_services";
 
 export default function PlayQuiz({ navigation }) {
-    // Estados principais
+    // Main states
     const [themes, setThemes] = useState([]);
-    const [allQuestions, setAllQuestions] = useState([]);   // todas do banco
+    const [allQuestions, setAllQuestions] = useState([]);   // all from the database
     const [answers, setAnswers] = useState([]);
-    const [quizQuestions, setQuizQuestions] = useState([]); // só as escolhidas p/ jogar
+    const [quizQuestions, setQuizQuestions] = useState([]); // only the ones chosen to play
 
     const [selectedTheme, setSelectedTheme] = useState(null);
     const [numQuestions, setNumQuestions] = useState("");
@@ -22,7 +22,7 @@ export default function PlayQuiz({ navigation }) {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [userAnswers, setUserAnswers] = useState([]);
 
-    // Carrega dados do banco
+    // Load data from the database
     useEffect(() => {
         const loadData = async () => {
             const t = await getAllThemes();
@@ -35,10 +35,10 @@ export default function PlayQuiz({ navigation }) {
         loadData();
     }, []);
 
-    // Inicia o quiz
+    // Start the quiz
     const startQuiz = () => {
         if (!selectedTheme) {
-            Alert.alert("Erro!", "Select a theme!");
+            Alert.alert("Error!", "Select a theme!");
             return;
         }
         const themeQuestions = allQuestions.filter(q => q.id_theme === selectedTheme.id);
@@ -66,7 +66,7 @@ export default function PlayQuiz({ navigation }) {
         setUserAnswers([]);
     };
 
-    // Responde pergunta
+    // Answer question
     const handleAnswer = (answer) => {
         const correct = answer.status_correct === 1;
         const updatedAnswers = [
@@ -82,23 +82,23 @@ export default function PlayQuiz({ navigation }) {
         }
     };
 
-    // Finaliza quiz
+    // Finish quiz
     const finishQuiz = async (finalAnswers) => {
         const correctCount = finalAnswers.filter(a => a.correct).length;
         const percent = ((correctCount / finalAnswers.length) * 100).toFixed(1);
 
-        // Salva resultado no banco
+        // Save result to the database
         await addResult({
             id_theme: selectedTheme.id,
             total_questions: finalAnswers.length,
             correct_answers: correctCount
         });
 
-        // Vai para tela de resumo
+        // Go to summary screen
         navigation.navigate("QuizSummary", { finalAnswers, percent });
     };
 
-    // Tela inicial (escolha de tema e quantidade)
+    // Initial screen (theme and quantity selection)
     if (!quizStarted) {
         return (
             <View style={styles.container}>
@@ -144,7 +144,7 @@ export default function PlayQuiz({ navigation }) {
         );
     }
 
-    // Tela de perguntas
+    // Question screen
     if (!quizQuestions.length || !quizQuestions[currentIndex]) {
         return (
             <View style={styles.container}>
@@ -159,7 +159,7 @@ export default function PlayQuiz({ navigation }) {
     return (
         <View style={styles.container}>
             <Text style={styles.principalTitle}>
-                Pergunta {currentIndex + 1}/{quizQuestions.length}
+                Question {currentIndex + 1}/{quizQuestions.length}
             </Text>
             <Text style={styles.label}>{currentQuestion.description}</Text>
 
@@ -173,17 +173,17 @@ export default function PlayQuiz({ navigation }) {
                 </TouchableOpacity>
             ))}
 
-            {/* Botão de desistir */}
+            {/* Quit button */}
             <TouchableOpacity
                 style={[styles.button, { backgroundColor: "red", marginTop: 20 }]}
                 onPress={() => {
                     Alert.alert(
-                        "Desistir do Quiz",
-                        "Tem certeza que deseja desistir?",
+                        "Quit Quiz",
+                        "Are you sure you want to quit?",
                         [
-                            { text: "Cancelar", style: "cancel" },
+                            { text: "Cancel", style: "cancel" },
                             {
-                                text: "Sim",
+                                text: "Yes",
                                 style: "destructive",
                                 onPress: () => {
                                     setQuizStarted(false);
@@ -197,7 +197,7 @@ export default function PlayQuiz({ navigation }) {
                     );
                 }}
             >
-                <Text style={styles.buttonText}>Desistir do Quiz</Text>
+                <Text style={styles.buttonText}>Quit Quiz</Text>
             </TouchableOpacity>
         </View>
     );

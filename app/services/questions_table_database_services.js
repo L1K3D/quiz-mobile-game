@@ -34,6 +34,32 @@ export async function getAllQuestions() {
     }));
 }
 
+// Retorna todas as questões de um tema
+export async function getQuestionsByTheme(id_theme) {
+    const cx = await getDbConnection();
+    const questions = await cx.getAllAsync('SELECT * FROM tbQuestions WHERE id_theme = ?', [id_theme]);
+    await cx.closeAsync();
+
+    return questions.map(question => ({
+        id: question.id,
+        description: question.description,
+        id_theme: question.id_theme
+    }));
+}
+
+// Retorna uma questão pelo id
+export async function getQuestionById(id) {
+    const cx = await getDbConnection();
+    const question = await cx.getFirstAsync('SELECT * FROM tbQuestions WHERE id = ?', [id]);
+    await cx.closeAsync();
+
+    return {
+        id: question.id,
+        description: question.description,
+        id_theme: question.id_theme
+    };
+}
+
 // Adiciona um registro
 export async function addQuestion(question) {
     const cx = await getDbConnection();

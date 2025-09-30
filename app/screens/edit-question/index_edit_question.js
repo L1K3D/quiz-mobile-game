@@ -1,35 +1,35 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useState, useEffect } from 'react';
 import { ScrollView, Text, View, TouchableOpacity, TextInput, ActivityIndicator, Alert } from 'react-native';
-import styles from './styles-create-questions/styles-create-questions';
-import * as tbThemes from '../../services/themes_table_database_services';
+import styles from './styles-edit-question/styles_edit_question';
 import * as tbQuestions from '../../services/questions_table_database_services';
 import * as tbAnswers from '../../services/answers_table_database_services';
 
-export default function CreateQuestions({ navigation, route }) {
-  const themeId = route.params?.themeId;
+export default function EditQuestion({ navigation, route }) {
+  const { questionId, onGoBack } = route.params;
   const [description, setDescription] = useState('');
-  const [answers, setAnswers] = useState(['', '', '', '']);
+  const [answers, setAnswers] = useState([]);
   const [correctAnswerIndex, setCorrectAnswerIndex] = useState(null);
-  const [themes, setThemes] = useState([]);
-  const [selectedTheme, setSelectedTheme] = useState(null);
-  const [loading, setLoading] = useState(!themeId);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function loadThemes() {
-      if (!themeId) {
-        try {
-          const data = await tbThemes.getAllThemes();
-          setThemes(data);
-        } catch (error) {
-          Alert.alert('Error', 'Failed to load themes.');
-        } finally {
-          setLoading(false);
-        }
+    async function loadQuestionData() {
+      try {
+        const question = await tbQuestions.getQuestionById(questionId);
+        const questionAnswers = await tbAnswers.getAnswersByQuestion(questionId);
+        
+        setDescription(question.description.split(': ').slice(1).join(': '));
+        setAnswers(questionAnswers.map(a => a.answer));
+        setCorrectAnswerIndex(questionAnswers.findIndex(a => a.status_correct === 1));
+      } catch (error) {
+        Alert.alert('Error', 'Failed to load question data.');
+        console.error(error);
+      } finally {
+        setLoading(false);
       }
     }
-    loadThemes();
-  }, [themeId]);
+    loadQuestionData();
+  }, [questionId]);
 
   const handleAnswerChange = (text, index) => {
     const newAnswers = [...answers];
@@ -38,9 +38,8 @@ export default function CreateQuestions({ navigation, route }) {
   };
 
   async function handleSave() {
-    const finalThemeId = themeId || selectedTheme;
-    if (!description.trim() || !finalThemeId) {
-      Alert.alert('Attention', 'Please fill in the description and select a theme.');
+    if (!description.trim()) {
+      Alert.alert('Attention', 'Please fill in the question description.');
       return;
     }
 
@@ -50,30 +49,32 @@ export default function CreateQuestions({ navigation, route }) {
     }
 
     try {
-      const questionsInTheme = await tbQuestions.getQuestionsByTheme(finalThemeId);
-      const questionNumber = questionsInTheme.length + 1;
-      const newDescription = `Question ${questionNumber}: ${description.trim()}`;
+        const question = await tbQuestions.getQuestionById(questionId);
+        const questionNumber = question.description.split(':')[0];
+        const newDescription = `${questionNumber}: ${description.trim()}`;
 
-      const questionId = await tbQuestions.addQuestion({
+      await tbQuestions.changeQuestion({
+        id: questionId,
         description: newDescription,
-        id_theme: finalThemeId
+        id_theme: question.id_theme
       });
 
+      const existingAnswers = await tbAnswers.getAnswersByQuestion(questionId);
       for (let i = 0; i < answers.length; i++) {
-        await tbAnswers.addAnswer({
+        const answerData = {
+          id: existingAnswers[i].id,
           answer: answers[i].trim(),
           status_correct: i === correctAnswerIndex ? 1 : 0,
           id_question: questionId
-        });
+        };
+        await tbAnswers.changeAnswer(answerData);
       }
 
-      Alert.alert('Success', 'Question added successfully!');
-      setDescription('');
-      setAnswers(['', '', '', '']);
-      setCorrectAnswerIndex(null);
-      setSelectedTheme(null);
+      Alert.alert('Success', 'Question updated successfully!');
+      if (onGoBack) {
+        onGoBack();
+      }
       navigation.goBack();
-      navigation.navigate('VisualizeQuestions')
     } catch (error) {
       Alert.alert('Error', 'Could not save question.');
       console.error(error);
@@ -84,16 +85,15 @@ export default function CreateQuestions({ navigation, route }) {
     return (
       <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
         <ActivityIndicator size="large" color="#007AFF" />
-        <Text>Loading themes...</Text>
+        <Text>Loading question data...</Text>
       </View>
     );
   }
 
   return (
     <ScrollView style={styles.container}>
-      <StatusBar style="auto" />
 
-      <Text style={styles.principalTitle}>Create Questions!</Text>
+      <Text style={styles.principalTitle}>Edit Question!</Text>
 
       <Text style={styles.label}>Question description:</Text>
       <TextInput
@@ -121,36 +121,8 @@ export default function CreateQuestions({ navigation, route }) {
         </View>
       ))}
 
-      {!themeId && (
-        <>
-          <Text style={styles.label}>Select the theme:</Text>
-          <FlatList
-            data={themes}
-            keyExtractor={(item) => item.id.toString()}
-            renderItem={({ item }) => (
-              <TouchableOpacity
-                style={[
-                  styles.themeItem,
-                  selectedTheme === item.id && styles.themeSelected
-                ]}
-                onPress={() => setSelectedTheme(item.id)}
-              >
-                <Text
-                  style={[
-                    styles.themeText,
-                    selectedTheme === item.id && styles.themeTextSelected
-                  ]}
-                >
-                  {item.description}
-                </Text>
-              </TouchableOpacity>
-            )}
-          />
-        </>
-      )}
-
       <TouchableOpacity style={styles.button} onPress={handleSave}>
-        <Text style={styles.buttonText}>Save Question</Text>
+        <Text style={styles.buttonText}>Save Changes</Text>
       </TouchableOpacity>
 
       <TouchableOpacity style={[styles.button, { backgroundColor: '#888' }]} onPress={() => navigation.goBack()}>
