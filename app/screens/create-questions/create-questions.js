@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useState, useEffect } from 'react';
-import { ScrollView, Text, View, TouchableOpacity, TextInput, ActivityIndicator, Alert } from 'react-native';
+import { ScrollView, Text, View, TouchableOpacity, TextInput, ActivityIndicator, Alert, FlatList } from 'react-native';
 import styles from './styles-create-questions/styles-create-questions';
 import * as tbThemes from '../../services/themes_table_database_services';
 import * as tbQuestions from '../../services/questions_table_database_services';
@@ -72,8 +72,11 @@ export default function CreateQuestions({ navigation, route }) {
       setAnswers(['', '', '', '']);
       setCorrectAnswerIndex(null);
       setSelectedTheme(null);
+      // Go back to the previous screen (VisualizeQuestions). The previous
+      // screen already listens to focus events and will reload questions,
+      // so we should NOT navigate to it without params (that caused
+      // `route.params` to be undefined and the crash).
       navigation.goBack();
-      navigation.navigate('VisualizeQuestions')
     } catch (error) {
       Alert.alert('Error', 'Could not save question.');
       console.error(error);
@@ -112,7 +115,7 @@ export default function CreateQuestions({ navigation, route }) {
             value={answer}
             onChangeText={(text) => handleAnswerChange(text, index)}
           />
-          <TouchableOpacity onPress={() => setCorrectAnswerIndex(index)} style={{padding: 8}}>
+          <TouchableOpacity onPress={() => setCorrectAnswerIndex(index)} style={{ padding: 8 }}>
             <View style={[
               styles.radio,
               correctAnswerIndex === index && styles.radioSelected

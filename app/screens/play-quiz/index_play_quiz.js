@@ -35,6 +35,14 @@ export default function PlayQuiz({ navigation }) {
         loadData();
     }, []);
 
+    // Setup and start the quiz
+    const start = (quantity, questions) => {
+        const shuffled = questions.sort(() => 0.5 - Math.random());
+        setQuizQuestions(shuffled.slice(0, quantity));
+        setQuizStarted(true);
+        setCurrentIndex(0);
+        setUserAnswers([]);
+    };
     // Start the quiz
     const startQuiz = () => {
         if (!selectedTheme) {
@@ -55,23 +63,30 @@ export default function PlayQuiz({ navigation }) {
         }
 
         if (qtd > themeQuestions.length) {
-            qtd = themeQuestions.length;
-            setNumQuestions(String(qtd));
+            Alert.alert(
+                "Invalid Number",
+                `The selected theme only has ${themeQuestions.length} questions. Please enter a valid number.`
+            );
+            return; // Stop the function and let the user correct the number
         }
 
-        const shuffled = themeQuestions.sort(() => 0.5 - Math.random());
-        setQuizQuestions(shuffled.slice(0, parseInt(numQuestions)));
-        setQuizStarted(true);
-        setCurrentIndex(0);
-        setUserAnswers([]);
+        start(qtd, themeQuestions);
     };
-
-    // Answer question
     const handleAnswer = (answer) => {
         const correct = answer.status_correct === 1;
+        const currentQuestion = quizQuestions[currentIndex];
+
+        // If the answer is wrong, find the correct one to display on the summary screen
+        if (!correct) {
+            const correctAnswer = answers.find(
+                (a) => a.id_question === currentQuestion.id && a.status_correct === 1
+            );
+            currentQuestion.correctAnswerText = correctAnswer ? correctAnswer.answer : 'N/A';
+        }
+
         const updatedAnswers = [
             ...userAnswers,
-            { question: quizQuestions[currentIndex], chosen: answer, correct }
+            { question: currentQuestion, chosen: answer, correct }
         ];
         setUserAnswers(updatedAnswers);
 
@@ -82,7 +97,6 @@ export default function PlayQuiz({ navigation }) {
         }
     };
 
-    // Finish quiz
     const finishQuiz = async (finalAnswers) => {
         const correctCount = finalAnswers.filter(a => a.correct).length;
         const percent = ((correctCount / finalAnswers.length) * 100).toFixed(1);
@@ -107,6 +121,8 @@ export default function PlayQuiz({ navigation }) {
                 <FlatList
                     data={themes}
                     keyExtractor={(item) => item.id.toString()}
+                    contentContainerStyle={{ alignItems: 'center' }}
+                    style={{ flex: 1, width: '100%' }}
                     renderItem={({ item }) => {
                         const count = allQuestions.filter(q => q.id_theme === item.id).length;
                         return (
@@ -114,7 +130,7 @@ export default function PlayQuiz({ navigation }) {
                                 onPress={() => setSelectedTheme(item)}
                                 style={[
                                     styles.card,
-                                    selectedTheme?.id === item.id && { backgroundColor: "#ddd" }
+                                    selectedTheme?.id === item.id && styles.selectedCard
                                 ]}
                             >
                                 <Text style={styles.label}>
@@ -125,21 +141,24 @@ export default function PlayQuiz({ navigation }) {
                     }}
                 />
 
-                <TextInput
-                    style={styles.input}
-                    placeholder="Number of questions"
-                    keyboardType="numeric"
-                    value={numQuestions}
-                    onChangeText={setNumQuestions}
-                />
+                <View style={styles.rodape}>
+                    <TextInput
+                        style={styles.input}
+                        placeholder="Number of questions"
+                        placeholderTextColor="#8A8F98"
+                        keyboardType="numeric"
+                        value={numQuestions}
+                        onChangeText={setNumQuestions}
+                    />
 
                 <TouchableOpacity style={styles.button} onPress={startQuiz}>
                     <Text style={styles.buttonText}>Start Quiz</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity style={styles.button} onPress={() => navigation.goBack()}>
+                <TouchableOpacity style={[styles.button, styles.buttonSecondary]} onPress={() => navigation.goBack()}>
                     <Text style={styles.buttonText}>Back</Text>
                 </TouchableOpacity>
+                </View>
             </View>
         );
     }
@@ -153,52 +172,63 @@ export default function PlayQuiz({ navigation }) {
         );
     }
 
+    // --- Question Screen ---
+
     const currentQuestion = quizQuestions[currentIndex];
     const currentAnswers = answers.filter(a => a.id_question === currentQuestion.id);
+    const progress = ((currentIndex + 1) / quizQuestions.length) * 100;
 
     return (
-        <View style={styles.container}>
-            <Text style={styles.principalTitle}>
-                Question {currentIndex + 1}/{quizQuestions.length}
-            </Text>
-            <Text style={styles.label}>{currentQuestion.description}</Text>
+        <View style={styles.quizContainer}>
+            <View style={styles.quizHeader}>
+                <Text style={styles.progressText}>
+                    Question {currentIndex + 1}/{quizQuestions.length}
+                </Text>
+                <View style={styles.progressBarContainer}>
+                    <View style={[styles.progressBar, { width: `${progress}%` }]} />
+                </View>
+                <Text style={styles.questionText}>{currentQuestion.description}</Text>
+            </View>
 
-            {currentAnswers.map((ans) => (
+            <View style={styles.answersContainer}>
+                {currentAnswers.map((ans) => (
+                    <TouchableOpacity
+                        key={ans.id}
+                        style={styles.answerButton}
+                        onPress={() => handleAnswer(ans)}
+                    >
+                        <Text style={styles.buttonText}>{ans.answer}</Text>
+                    </TouchableOpacity>
+                ))}
+            </View>
+
+            <View style={styles.quizFooter}>
                 <TouchableOpacity
-                    key={ans.id}
-                    style={styles.button}
-                    onPress={() => handleAnswer(ans)}
-                >
-                    <Text style={styles.buttonText}>{ans.answer}</Text>
-                </TouchableOpacity>
-            ))}
-
-            {/* Quit button */}
-            <TouchableOpacity
-                style={[styles.button, { backgroundColor: "red", marginTop: 20 }]}
-                onPress={() => {
-                    Alert.alert(
-                        "Quit Quiz",
-                        "Are you sure you want to quit?",
-                        [
-                            { text: "Cancel", style: "cancel" },
-                            {
-                                text: "Yes",
-                                style: "destructive",
-                                onPress: () => {
-                                    setQuizStarted(false);
-                                    setQuizQuestions([]);
-                                    setUserAnswers([]);
-                                    setNumQuestions("");
-                                    setSelectedTheme(null);
+                    style={styles.quitButton}
+                    onPress={() => {
+                        Alert.alert(
+                            "Quit Quiz",
+                            "Are you sure you want to quit?",
+                            [
+                                { text: "Cancel", style: "cancel" },
+                                {
+                                    text: "Yes",
+                                    style: "destructive",
+                                    onPress: () => {
+                                        setQuizStarted(false);
+                                        setQuizQuestions([]);
+                                        setUserAnswers([]);
+                                        setNumQuestions("");
+                                        setSelectedTheme(null);
+                                    }
                                 }
-                            }
-                        ]
-                    );
-                }}
-            >
-                <Text style={styles.buttonText}>Quit Quiz</Text>
-            </TouchableOpacity>
+                            ]
+                        );
+                    }}
+                >
+                    <Text style={styles.buttonText}>Quit Quiz</Text>
+                </TouchableOpacity>
+            </View>
         </View>
     );
 }

@@ -101,19 +101,6 @@ export async function deleteAllAnswers() {
     await cx.closeAsync();
 }
 
-export async function getAnswersByQuestion(id_question) {
-    const cx = await getDbConnection();
-    const answers = await cx.getAllAsync('SELECT * FROM tbAnswers WHERE id_question = ?', [id_question]);
-    await cx.closeAsync();
-
-    return answers.map(answer => ({
-        id: answer.id,
-        answer: answer.answer,
-        status_correct: answer.status_correct,
-        id_question: answer.id_question
-    }));
-}
-
 export async function getCorrectAnswersByQuestion(id_question) {
     const cx = await getDbConnection();
     const answers = await cx.getAllAsync('SELECT * FROM tbAnswers WHERE id_question = ? AND status_correct = 1', [id_question]);

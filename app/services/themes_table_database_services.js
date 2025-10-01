@@ -53,15 +53,7 @@ export async function changeTheme(theme) {
     SET name = ?
     WHERE id = ?
   `;
-<<<<<<< HEAD
-    const result = await cx.runAsync(query, [
-        theme.name,
-        theme.id
-    ]);
-=======
-    // ordem correta: [name, id]
-    const execResult = await cx.runAsync(query, [theme.name, theme.id]);
->>>>>>> de93ae30fdf5cdcc4128e2cf3d74fe726e4c936b
+    const execResult = await cx.runAsync(query, [theme.name, theme.id,]);
     await cx.closeAsync();
     return execResult.changes === 1;
 }

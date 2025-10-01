@@ -84,9 +84,9 @@ export async function changeQuestion(question) {
     WHERE id = ?
   `;
     const result = await cx.runAsync(query, [
-        question.id,
         question.description,
-        question.id_theme
+        question.id_theme,
+        question.id
     ]);
     await cx.closeAsync();
     return result.changes === 1;
@@ -107,19 +107,6 @@ export async function deleteAllQuestions() {
     const query = 'DELETE FROM tbQuestions';
     await cx.execAsync(query);
     await cx.closeAsync();
-}
-
-export async function getQuestionsByTheme(id_theme) {
-    const cx = await getDbConnection();
-    const query = 'SELECT * FROM tbQuestions WHERE id_theme = ?';
-    const questions = await cx.getAllAsync(query, [id_theme]);
-    await cx.closeAsync();
-
-    return questions.map(question => ({
-        id: question.id,
-        description: question.description,
-        id_theme: question.id_theme
-    }));
 }
 
 export async function deleteQuestionsByTheme(id_theme) {

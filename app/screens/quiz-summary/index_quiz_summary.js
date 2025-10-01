@@ -1,49 +1,50 @@
 // screens/play-quiz/quiz_summary.js
 import { View, Text, FlatList, TouchableOpacity } from "react-native";
-import styles from "./styles-play-quiz/styles_play_quiz";
+import styles from "./styles-quiz-summary/styles_quiz_summary";
 
 export default function QuizSummary({ route, navigation }) {
     const { finalAnswers, percent } = route.params;
 
     return (
         <View style={styles.container}>
-            <Text style={styles.principalTitle}>Resumo do Quiz</Text>
-            <Text style={styles.label}>Acertos: {percent}%</Text>
+            <View style={styles.header}>
+                <Text style={styles.principalTitle}>Quiz Summary</Text>
+                <Text style={styles.scoreLabel}>Your Score: <Text style={styles.scorePercent}>{percent}%</Text></Text>
+            </View>
 
             <FlatList
                 data={finalAnswers}
                 keyExtractor={(item, index) => index.toString()}
+                style={{ width: '100%' }}
+                contentContainerStyle={{ paddingHorizontal: 16 }}
                 renderItem={({ item }) => (
                     <View style={styles.card}>
                         <Text style={styles.label}>{item.question.description}</Text>
-                        <Text style={{ color: item.correct ? "green" : "red" }}>
+                        <Text style={[styles.answerText, { color: item.correct ? styles.correctText.color : styles.incorrectText.color }]}>
                             {item.correct
-                                ? "✅ Correto"
-                                : `❌ Errado (Correta: ${
-                                // Busca a alternativa correta
-                                item.question.correctAnswer ||
-                                "verifique no banco de respostas"
+                                ? "✅ Correct"
+                                : `❌ Incorrect (Correct: ${
+                                    item.question.correctAnswerText || "N/A"
                                 })`}
                         </Text>
                     </View>
                 )}
             />
 
-            {/* Botão Jogar Novamente */}
-            <TouchableOpacity
-                style={styles.button}
-                onPress={() => navigation.replace("PlayQuiz")}
-            >
-                <Text style={styles.buttonText}>Jogar Novamente</Text>
-            </TouchableOpacity>
-
-            {/* Botão Voltar ao Menu */}
-            <TouchableOpacity
-                style={[styles.button, { backgroundColor: "gray" }]}
-                onPress={() => navigation.goBack()}
-            >
-                <Text style={styles.buttonText}>Voltar ao Menu</Text>
-            </TouchableOpacity>
+            <View style={styles.footer}>
+                <TouchableOpacity
+                    style={styles.button}
+                    onPress={() => navigation.replace("PlayQuiz")}
+                >
+                    <Text style={styles.buttonText}>Play Again</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                    style={[styles.button, styles.buttonSecondary]}
+                    onPress={() => navigation.popToTop()}
+                >
+                    <Text style={styles.buttonText}>Back to Home</Text>
+                </TouchableOpacity>
+            </View>
         </View>
     );
 }

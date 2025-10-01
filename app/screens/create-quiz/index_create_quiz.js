@@ -5,9 +5,9 @@ import {
     View,
     TouchableOpacity,
     ActivityIndicator,
-    ScrollView,
     Alert,
     Keyboard,
+    ScrollView,
     StyleSheet
 } from 'react-native';
 import styles from './styles-create-quiz/styles_create_quiz';
@@ -83,30 +83,18 @@ export default function CreateQuiz({ navigation, route }) {
                             style={[
                                 styles.card,
                                 {
-                                    flexDirection: 'row',
                                     justifyContent: 'space-between',
                                     alignItems: 'center',
                                 },
                             ]}
-                        >
-                            <View>
-                                <Text style={{ color: '#b5c0d0', fontWeight: '700' }}>
-                                    {theme.name}
-                                </Text>
-                            </View>
+                        > 
+                            <Text style={styles.themeName}>
+                                {theme.name}
+                            </Text>
 
-                            <View style={{ flexDirection: 'row' }}>
-                                {/* Edit agora navega para CreateNewTheme com params */}
+                            <View style={[styles.buttonGroup, { marginTop: 15 }]}>
                                 <TouchableOpacity
-                                    style={[
-                                        styles.button,
-                                        {
-                                            width: 90,
-                                            height: 36,
-                                            justifyContent: 'center',
-                                            marginRight: 8,
-                                        },
-                                    ]}
+                                    style={styles.actionButton}
                                     onPress={() =>
                                         navigation.navigate('CreateNewTheme', {
                                             themeId: theme.id,
@@ -115,24 +103,11 @@ export default function CreateQuiz({ navigation, route }) {
                                         })
                                     }
                                 >
-                                    <Text style={styles.buttonText}>Edit</Text>
+                                    <Text style={styles.buttonText}>Editar</Text>
                                 </TouchableOpacity>
 
                                 <TouchableOpacity
-                                    style={[
-                                        styles.buttonSecondary,
-                                        { width: 90, height: 36, justifyContent: 'center' },
-                                    ]}
-                                    onPress={() => removeTheme(theme.id)}
-                                >
-                                    <Text style={styles.buttonText}>Delete</Text>
-                                </TouchableOpacity>
-
-                                <TouchableOpacity
-                                    style={[
-                                        styles.button,
-                                        { width: 110, height: 36, justifyContent: 'center' },
-                                    ]}
+                                    style={styles.actionButton}
                                     onPress={() =>
                                         navigation.navigate('VisualizeQuestions', {
                                             themeId: theme.id,
@@ -140,7 +115,10 @@ export default function CreateQuiz({ navigation, route }) {
                                         })
                                     }
                                 >
-                                    <Text style={styles.buttonText}>Questions</Text>
+                                    <Text style={styles.buttonText}>Perguntas</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity style={[styles.actionButton, styles.deleteButton]} onPress={() => removeTheme(theme.id)}>
+                                    <Text style={styles.buttonText}>Excluir</Text>
                                 </TouchableOpacity>
                             </View>
                         </View>
@@ -154,9 +132,9 @@ export default function CreateQuiz({ navigation, route }) {
             >
                 <Text style={styles.buttonText}>Create a new Theme</Text>
             </TouchableOpacity>
-
+ 
             <TouchableOpacity
-                style={styles.button}
+                style={[styles.button, styles.buttonSecondary]}
                 onPress={() => navigation.navigate('Home')}
             >
                 <Text style={styles.buttonText}>Back</Text>

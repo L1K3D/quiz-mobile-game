@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Alert } from 'react-native';
+import { useState, useEffect } from 'react';
+import { View, Text, TextInput, TouchableOpacity, Alert, StatusBar } from 'react-native';
 import styles from './styles-create-new-theme/styles_create_new_theme';
 import * as tbThemes from '../../services/themes_table_database_services';
 
@@ -11,59 +11,47 @@ export default function CreateNewTheme({ navigation, route }) {
 
     async function saveTheme() {
         if (!name.trim()) {
-            Alert.alert('Erro', 'Digite um nome para o tema!');
+            Alert.alert('Error', 'Please enter a name for the theme!');
             return;
         }
 
         try {
             if (isEditing) {
                 const ok = await tbThemes.changeTheme({ id: themeId, name });
-                if (ok) Alert.alert('Sucesso', 'Tema atualizado com sucesso!');
-                else Alert.alert('Erro', 'Não foi possível atualizar o tema.');
+                if (ok) Alert.alert('Success', 'Theme updated successfully!');
+                else Alert.alert('Error', 'Could not update theme.');
             } else {
                 const ok = await tbThemes.addTheme({ name });
-                if (ok) Alert.alert('Sucesso', 'Tema criado com sucesso!');
-                else Alert.alert('Erro', 'Não foi possível criar o tema.');
+                if (ok) Alert.alert('Success', 'Theme created successfully!');
+                else Alert.alert('Error', 'Could not create theme.');
             }
 
             navigation.navigate('CreateQuiz', { themeAdded: true });
         } catch (e) {
-            Alert.alert('Erro', e.message ?? 'Falha ao salvar tema');
+            Alert.alert('Error', e.message ?? 'Failed to save theme');
         }
     }
 
     return (
         <View style={styles.container}>
             <StatusBar style="auto" />
-            <Text style={styles.principalTitle}>Screen to create a new Theme!</Text>
-
-            {/*Form to create a new theme*/}
-
-            <TextInput
-                style={styles.input}
-                value={name}
-                onChangeText={setName}
-                placeholder="Nome do tema"
-            />
-
-            {/*When clicking the button, save to SQLite*/}
-            <TouchableOpacity style={styles.button} onPress={handleSave}>
-                <Text style={styles.buttonText}>Save</Text>
-            </TouchableOpacity>
-
-            {/*Back*/}
-
-            <TouchableOpacity style={styles.button} onPress={() => navigation.goBack()}>
-                <Text style={styles.buttonText}>Back</Text>
-            </TouchableOpacity>
-,
-
-
-
-
-
-
-
+            <Text style={styles.principalTitle}>{isEditing ? 'Edit Theme' : 'Create a New Theme'}</Text>
+            
+            <View style={styles.formContainer}>
+                <TextInput
+                    style={styles.input}
+                    value={name}
+                    onChangeText={setName}
+                    placeholder="Theme name"
+                    placeholderTextColor="#8A8F98"
+                />
+                <TouchableOpacity style={styles.button} onPress={saveTheme}>
+                    <Text style={styles.buttonText}>Save</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={[styles.button, styles.buttonSecondary]} onPress={() => navigation.goBack()}>
+                    <Text style={styles.buttonText}>Back</Text>
+                </TouchableOpacity>
+            </View>
         </View>
     );
 }
